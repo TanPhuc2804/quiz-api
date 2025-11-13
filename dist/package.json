@@ -22,8 +22,7 @@
   "test": "echo \"Error: no test specified\" && exit 1",
   "clean": "rimraf dist",
   "build-babel": "npm run clean && babel . --out-dir dist --ignore \"**/node_modules/**,dist\" --copy-files --presets @babel/preset-env",
-  "build": "npm run build-babel",
-  "start": "node dist/app.js"
+  "build": "npm run build-babel && node .dist/app.js"
   },
   "keywords": [],
   "author": "",
