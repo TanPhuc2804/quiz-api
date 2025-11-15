@@ -9,7 +9,7 @@ const moment = require("moment")
 
 const verifyLogin = asyncHandler(async (req, res, next) => {
     //  req.cookies.token ?? 
-    const token = req.cookies._vercel_jwt;
+    const token = req.cookies.token;
     console.log("Cookies:", req.cookies);
     if (!token) {
         throw new AppError('Vui lòng đăng nhập', 401);
@@ -60,8 +60,8 @@ const verifyPackage = asyncHandler(async (req, res, next) => {
 
 
 const verifyAdmin = asyncHandler(async (req, res, next) => {
-    // req.cookies.token ?? req.cookies._vercel_jwt
-    const token = req.cookies._vercel_jwt;
+    // 
+    const token =req.cookies.token ;
     if (!token) {
         throw new AppError('Vui lòng đăng nhập', 401);
     }
