@@ -5,11 +5,11 @@ const userModel = require("../model/user")
 const expressAsyncHandler = require("express-async-handler")
 const qs = require("qs")
 const crypto = require("crypto")
-const moment = require("moment")
 const { VNPay } = require("vnpay")
 const env = {}
 require("dotenv").config({ processEnv: env })
-
+const moment = require('moment-timezone');
+const VN_TIMEZONE = 'Asia/Ho_Chi_Minh';
 
 const vnpay = new VNPay({
     tmnCode: env.VNP_TMN_CODE,
@@ -22,6 +22,12 @@ const vnpay = new VNPay({
 const getUrlPayment = expressAsyncHandler(async (req, res) => {
     const idOrder = generateOrderId();
     const { amount, package_id } = req.body;
+
+    const vnp_CreateDate_VN = moment().tz(VN_TIMEZONE).format("YYYYMMDDHHmmss");
+    const vnp_ExpireDate_VN = moment().tz(VN_TIMEZONE).add(15, "minutes").format("YYYYMMDDHHmmss");
+
+    console.log("create date:", vnp_CreateDate_VN);
+    console.log("expire date:", vnp_ExpireDate_VN);
 
     if (!amount || !package_id) {
         throw new AppError("Thiếu thông tin thanh toán", 400)
@@ -37,8 +43,8 @@ const getUrlPayment = expressAsyncHandler(async (req, res) => {
         vnp_TxnRef: idOrder,
         vnp_OrderInfo: `Thanh toan goi ${package_id}`,
         vnp_ReturnUrl: env.VNP_RETURN_URL,
-        vnp_CreateDate: moment().format("YYYYMMDDHHmmss"),
-        vnp_ExpireDate: moment().add(15, "minutes").format("YYYYMMDDHHmmss"),
+        vnp_CreateDate: vnp_CreateDate_VN,
+        vnp_ExpireDate: vnp_ExpireDate_VN,
         vnp_Locale: "vn",
         vnp_OrderType: "other",
         vnp_CurrCode: "VND",
