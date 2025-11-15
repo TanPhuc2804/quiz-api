@@ -10,7 +10,7 @@ const app = express()
 const PORT = env.PORT || 5000
 
 app.use(cors({
-    origin: ["http://localhost:5173","https://ic-3-quiz-git-main-tanphucs-projects.vercel.app"],
+    origin: ["http://localhost:5173","https://ic-3-quiz-git-main-tanphucs-projects.vercel.app","ic-3-quiz.vercel.app","ic-3-quiz-5nvt5yarv-tanphucs-projects.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
