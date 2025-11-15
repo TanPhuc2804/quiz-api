@@ -35,7 +35,8 @@ const login = asyncHandler(async (req, res, next) => {
             secure: true,
             maxAge: 60 * 60 * 1000,
             sameSite: "none",
-            domain: "quiz-api-mlyw.onrender.com"
+            domain: "quiz-api-mlyw.onrender.com",
+            path: '/'
         }).status(200).json({ status: true, token, role: user.role });
 
 });
