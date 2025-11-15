@@ -20,7 +20,7 @@ const getPackageByUser = expressAsyncHandler(async (req, res) => {
         throw new AppError("Người dùng chưa mua gói nào", 404);
     }
     const duration = getTimeRemaining(new Date(), new Date(userPackage.package.expire_date))
-    res.status(200).json({ package_id: userPackage.package.package_id, duration })
+    res.status(200).json({ package_id: userPackage.package.package_id, duration: duration ?? "Trọn đời" })
 })
 
 module.exports = { getAllPackage ,getPackageByUser}

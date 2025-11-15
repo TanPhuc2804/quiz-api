@@ -33,6 +33,12 @@ const verifyPackage = asyncHandler(async (req, res, next) => {
         return next();
     }
 
+    const checkExpire = moment().isAfter(moment(userData.package.expire_date));
+    if (checkExpire) {
+        await userModel.findByIdAndUpdate(user.id, { status: "expired", "package.package_id": null, "package.register_date": null, "package.expire_date": null }, { new: true });
+        throw new AppError('Gói của bạn đã hết hạn, vui lòng đăng ký gói để tiếp tục sử dụng dịch vụ !', 403);
+    }
+
     if (userData.status === "none") {
         const countResult = await result.countDocuments({ user_id: user.id });
         if (countResult >= 1) {
@@ -40,6 +46,7 @@ const verifyPackage = asyncHandler(async (req, res, next) => {
         }
         return next();
     }
+
 
     if (userData.status === "paid") {
         throw new AppError('Vui lòng đợi admin phê duyệt gói của bạn ! Bạn có thể liên hệ tới zalo: 0564068652', 403);
@@ -49,19 +56,31 @@ const verifyPackage = asyncHandler(async (req, res, next) => {
         throw new AppError('Vui lòng đăng ký gói để sử dụng dịch vụ !', 403);
     }
 
+
+    next();
+});
+const verifyPackageDisplay = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    const userData = await userModel.findById(user.id);
+    if (!userData) {
+        throw new AppError('Vui lòng đăng nhập !', 404);
+    }
+    if (user.role === "admin") {
+        return next();
+    }
+
     const checkExpire = moment().isAfter(moment(userData.package.expire_date));
     if (checkExpire) {
         await userModel.findByIdAndUpdate(user.id, { status: "expired", "package.package_id": null, "package.register_date": null, "package.expire_date": null }, { new: true });
         throw new AppError('Gói của bạn đã hết hạn, vui lòng đăng ký gói để tiếp tục sử dụng dịch vụ !', 403);
     }
-
     next();
 });
 
 
 const verifyAdmin = asyncHandler(async (req, res, next) => {
     // 
-    const token =req.cookies.token ;
+    const token = req.cookies.token;
     if (!token) {
         throw new AppError('Vui lòng đăng nhập', 401);
     }
@@ -79,4 +98,4 @@ const verifyAdmin = asyncHandler(async (req, res, next) => {
 
 
 
-module.exports = { verifyLogin, verifyPackage, verifyAdmin };
+module.exports = { verifyLogin, verifyPackage, verifyAdmin,verifyPackageDisplay };
