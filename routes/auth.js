@@ -12,7 +12,7 @@ router.get('/logout', (req, res) => {
         {
             httpOnly: true,
             secure: true,
-            maxAge: 60 * 60 * 1000,
+            maxAge: 0,
             sameSite: "none",
             domain: "quiz-api-mlyw.onrender.com",
             path: '/'
