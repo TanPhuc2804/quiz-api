@@ -14,8 +14,8 @@ router.get('/logout', (req, res) => {
             secure: true,
             maxAge: 0,
             sameSite: "none",
-            // domain: "quiz-api-mlyw.onrender.com",
-            // path: '/'
+            domain: "quiz-api-mlyw.onrender.com",
+            path: '/'
         }).status(200).json({ status: true });
 });
 module.exports = router;
