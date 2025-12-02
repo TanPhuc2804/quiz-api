@@ -1,10 +1,9 @@
 const express = require('express');
-const { getAllExam, getById } = require('../controllers/exam'); 
+const { getAllExam, getById } = require('../controllers/exam');
+const { checkUser } = require('../midlewares/verify');
 const router = express.Router();
 
-// Test API endpoint
-
-router.get("/", getAllExam);
-router.get("/:id",getById)
+router.get("/", checkUser, getAllExam);
+router.get("/:id", checkUser, getById);
 
 module.exports = router;

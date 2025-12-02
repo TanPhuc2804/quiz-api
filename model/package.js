@@ -27,11 +27,21 @@ const packageSchema = new mongoose.Schema(
       trim: true,
     },
     benefits: {
-      type: [String], 
+      type: [String],
       default: [],
+    },
+    sum_practice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    attempts_training_limit: {
+      type: Number,
+      required: true,
+      min: 0,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Package', packageSchema,"Package");
+module.exports = mongoose.model('Package', packageSchema, "Package");

@@ -1,5 +1,5 @@
 const { AppError } = require("../error")
-const { generateOrderId } = require("../services/services")
+const { generateOrderId, generateExamForUser, getRamdomExam } = require("../services/services")
 const packageMopdel = require("../model/package")
 const userModel = require("../model/user")
 const expressAsyncHandler = require("express-async-handler")
@@ -25,10 +25,6 @@ const getUrlPayment = expressAsyncHandler(async (req, res) => {
 
     const vnp_CreateDate_VN = moment().tz(VN_TIMEZONE).format("YYYYMMDDHHmmss");
     const vnp_ExpireDate_VN = moment().tz(VN_TIMEZONE).add(15, "minutes").format("YYYYMMDDHHmmss");
-
-    console.log("create date:", vnp_CreateDate_VN);
-    console.log("expire date:", vnp_ExpireDate_VN);
-
     if (!amount || !package_id) {
         throw new AppError("Thiếu thông tin thanh toán", 400)
     }
@@ -63,17 +59,20 @@ const vnpayReturn = expressAsyncHandler(async (req, res) => {
         const packageId = vnp_OrderInfo.split(" ")[3]
         const packages = await packageMopdel.findById(packageId)
         const date = moment(vnp_PayDate, "YYYYMMDDHHmmss").toDate();
-        const exprie_date = moment(date).add(packages.duration, "days").toDate()
         if (!packages) {
             throw new AppError("Gói không tồn tại", 404)
         }
         const userPackge = {
             package_id: packages._id,
             register_date: date,
-            expire_date: exprie_date
+            attempts_remaining_test: packages.sum_practice
         }
+
+        // thực hiện tạo ra 10 bài test cho người dùng
+       // const examList = await generateExamForUser(packages.sum_practice, packages.attempts_training_limit)
+        const examList = await getRamdomExam(packages.sum_practice, packages.attempts_training_limit)
         const updateUser = await userModel.findByIdAndUpdate(userId, {
-            $set: { status: "paid", package: userPackge },
+            $set: { status: "paid", package: userPackge, exams: examList },
         }, { new: true })
         await updateUser.save()
 

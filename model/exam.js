@@ -5,13 +5,15 @@ const examSchema = new mongoose.Schema(
   {
     id: {
       type: Number,
-      required: true,
-      unique: true,
     },
     content: {
       type: String,
       required: true,
       trim: true,
+    },
+    level: {
+      type: Number,
+      required: true,
     },
     description: {
       type: String,
@@ -53,13 +55,13 @@ examSchema.pre('validate', async function (next) {
 });
 
 // 2️⃣ Sau khi lưu thành công mới tăng thật counter
-examSchema.post('save', async function (doc, next) {
-  try {
-    await getNextSequence('exam_id'); // tăng thật sau khi lưu thành công
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
+// examSchema.post('save', async function (doc, next) {
+//   try {
+//     await getNextSequence('exam_id'); // tăng thật sau khi lưu thành công
+//     next();
+//   } catch (err) {
+//     next(err);
+//   }
+// });
 
 module.exports = mongoose.model('Exam', examSchema, "Exam");

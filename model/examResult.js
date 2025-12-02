@@ -13,9 +13,10 @@ const resultDetailSchema = new mongoose.Schema(
     },
     question_type: {
       type: String,
-      enum: ['normal', 'classify', 'multiple', 'drop_match'],
+      enum: ['normal', 'classify', 'multiple', 'drop_match',"fill_blank"],
       required: true,
     },
+ 
     user_answer: {
       type: mongoose.Schema.Types.Mixed, 
       required: false,
@@ -66,6 +67,11 @@ const examResultSchema = new mongoose.Schema(
     },
     total_content: {
       type: Number,
+      required: true,
+    },
+    mode:{
+      type: String,
+      enum: ['testing', 'training'],
       required: true,
     },
     result_detail: {

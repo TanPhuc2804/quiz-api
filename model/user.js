@@ -37,9 +37,9 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
-    status : {
+    status: {
       type: String,
-      enum: ['active', 'expired', 'none',"paid"],
+      enum: ['active', 'expired', 'none', "paid"],
       required: true,
       lowercase: true,
       trim: true,
@@ -55,11 +55,28 @@ const userSchema = new mongoose.Schema(
         type: Date,
         default: null,
       },
-      expire_date: {
-        type: Date,
-        default: null,
-      },
+      attempts_remaining_test: {
+        type: Number,
+        default: 0,
+      }
     },
+    exams: [
+      {
+        exam_id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Exam',
+          required: true,
+        },
+        attempts_test: {
+          type: Number,
+          default: 0,
+        },
+        attempts_training: {
+          type: Number,
+          default: 0,
+        },
+      }
+    ]
   },
   { timestamps: true }
 );

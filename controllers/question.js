@@ -2,6 +2,7 @@ const { AppError } = require("../error")
 const exam = require("../model/exam")
 const questionModel = require("../model/question")
 const expressAsyncHandler = require("express-async-handler")
+const { getTotalQuestionByTypeSafe, checkQuestionAvailability } = require("../services/services")
 const getAllQuestion = expressAsyncHandler(async (req, res) => {
     const questions = await questionModel.find({}).populate("exam_id")
     if (!questions) {
@@ -24,10 +25,9 @@ const getAllQuestion = expressAsyncHandler(async (req, res) => {
 const getQuestionByExam = expressAsyncHandler(async (req, res) => {
     const { examId } = req.params
     const questions = await questionModel.find({ exam_id: examId }).sort({ question: 1 })
-    if (!questions) {
+    if (!questions || questions.length === 0) {
         throw new AppError("No question found for this exam", 404)
     }
-    const length = questions.length
     questions.forEach((question, index) => {
         question.question = index + 1;
     })
@@ -77,7 +77,7 @@ const removeExam = expressAsyncHandler(async (req, res) => {
 
 
 const createExamForRandomQuestions = expressAsyncHandler(async (req, res) => {
-    const { total_question, require_questions, description, content, image_url, duration } = req.body
+    const { total_question, require_questions, description, content, image_url, duration,level } = req.body
     if (!require_questions || !Array.isArray(require_questions) || require_questions.length === 0) {
         throw new AppError("Vui lòng lựa chọn yêu cầu của bạn", 400)
     }
@@ -86,11 +86,14 @@ const createExamForRandomQuestions = expressAsyncHandler(async (req, res) => {
     }
     const image = image_url || "https://res.cloudinary.com/da5mlszld/image/upload/v1756055813/IC3-removebg-preview_va4uxe.png"
     let questions = []
+    const checkAvailability = await checkQuestionAvailability(require_questions,level)
+    if (checkAvailability) {
+        throw new AppError(`Không đủ câu hỏi cho yêu cầu: ${checkAvailability.question_type.toUpperCase()} với LEVEL ${level} (Cần: ${checkAvailability.needed}, Hiện có: ${checkAvailability.availableCount})`, 400)
+    }
     for (const req of require_questions) {
         const { question_type, limit } = req
-        console.log(question_type, limit)
         const randomQuestions = await questionModel.aggregate([
-            { $match: { question_type: question_type } },
+            { $match: { question_type: question_type,level: level } },
             { $sample: { size: limit } }
         ])
         questions = questions.concat(randomQuestions)
@@ -101,7 +104,8 @@ const createExamForRandomQuestions = expressAsyncHandler(async (req, res) => {
         image_url: image,
         duration,
         total_question: questions.length,
-        category_id: 1
+        category_id: 1,
+        level
     })
     const examSaved = await examCreated.save()
 

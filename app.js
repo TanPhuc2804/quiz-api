@@ -26,6 +26,7 @@ const userRoutes = require("./routes/user")
 const authRoutes = require("./routes/auth");
 const packageRoutes = require("./routes/package")
 const paymentRoutes = require("./routes/payment")
+const dashboardRoutes = require("./routes/dashboard")
 // Routes
 app.use("/api/exams", examRoutes)
 app.use("/api/questions", questionRoutes)
@@ -33,6 +34,7 @@ app.use("/api/users", userRoutes)
 app.use("/api/auth", authRoutes)
 app.use("/api/packages", packageRoutes)
 app.use("/api/payment",paymentRoutes )
+app.use("/api/dashboard", dashboardRoutes)
 app.use(errorHandler)
 
 // Connect to MongoDB

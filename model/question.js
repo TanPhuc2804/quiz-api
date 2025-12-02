@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const getNextSequence = require('../services/getNextSequence');
 
+const FillBlankOptionSchema = new mongoose.Schema({
+  id: { type: Number, required: true },
+  content: { type: String, required: true }
+}, { _id: false });
+
+const BlankItemSchema = new mongoose.Schema({
+  id: { type: Number, required: true },
+  correctOptionId: { type: Number, required: true },
+  trailingText: { type: String, required: true }
+}, { _id: false });
+
+const FillBlankQuestionSchema = new mongoose.Schema({
+  leadingText: { type: String, required: true },
+  options: [FillBlankOptionSchema], 
+  blanks: [BlankItemSchema]
+}, { _id: false }); 
+
 const matchQuestionSchema = new mongoose.Schema(
   {
     id: { type: Number, required: true },
@@ -36,7 +53,7 @@ const examQuestionSchema = new mongoose.Schema(
       },
     ],
     id: {
-      type: Number, 
+      type: Number,
       unique: true,
     },
     content: {
@@ -47,9 +64,13 @@ const examQuestionSchema = new mongoose.Schema(
     question: {
       type: Number,
     },
+    level: {
+      type: Number,
+      required: true,
+    },
     question_type: {
       type: String,
-      enum: ['normal', 'drop_match', 'multiple', 'classify'],
+      enum: ['normal', 'drop_match', 'multiple', 'classify',"fill_blank"],
       required: true,
     },
     option: {
@@ -75,6 +96,10 @@ const examQuestionSchema = new mongoose.Schema(
     classify_question: {
       type: [classifyQuestionSchema],
       default: [],
+    },
+    fill_blank_question: {
+      type: FillBlankQuestionSchema,
+      default: null,
     },
   },
   { timestamps: true }
